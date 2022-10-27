@@ -1,4 +1,5 @@
 import json
+import re
 
 
 def write_json(root_file_path: str, data: dict) -> None:
@@ -18,6 +19,10 @@ def remove_blank_lines(str: str) -> str:
     return strings
 
 
-def remove_ingredients(str: str) -> str:
-    str = str.replace("Ingredients", "")
-    return str
+def list_from_str(str: str) -> list:
+    output = []
+    lines = str.split("\n")
+    for line in lines:
+        if not line.startswith("For"):
+            output.append(line.strip())
+    return output

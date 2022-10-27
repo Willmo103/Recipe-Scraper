@@ -1,7 +1,8 @@
 from dis import Instruction
 import requests as r
 from bs4 import BeautifulSoup as bs
-from utils import remove_blank_lines, remove_ingredients
+from utils import remove_blank_lines, list_from_str
+import re
 
 # this import shows up as one we're not using, but we
 # still have to have it installed for BeautifulSoup
@@ -35,6 +36,7 @@ def scrape_simply_quinoa(url: str) -> dict:
         soup.find("div", class_="wprm-recipe-servings-container")
         .getText()
         .replace("Servings", "")
+        .replace("servings", "")
         .strip()
     )
     calories = (
@@ -43,7 +45,8 @@ def scrape_simply_quinoa(url: str) -> dict:
         .replace("Calories", "")
         .strip()
     )
-    nutrition = soup.find("div", class_="wprm-nutrition-label-container").getText()
+    nutrition_raw = soup.find("div", class_="wprm-nutrition-label-container").getText()
+    nutrition = nutrition_raw.split(" | ")
 
     # get each ingredient div
     ingredients_raw = soup.findAll("li", class_="wprm-recipe-ingredient")
@@ -96,28 +99,81 @@ def scrape_real_foodie_titans(url: str) -> dict:
     soup = bs(req, "html5lib")
 
     name = soup.find("h2", "tasty-recipes-title").getText()
-    prep_time = soup.find("span", "prep-time").getText()
-    cook_time = soup.find("span", "cook-time").getText()
-    servings = soup.find("span", class_="yield").getText()
-    ingredients_raw = soup.find("div", class_="tasty-recipes-ingredients").getText()
-    ingredients = remove_ingredients(ingredients_raw).replace("Ingredients", "").strip()
+    cook_time = soup.find("span", "cook-time").getText().replace("Cook: ", "")
+    # Not all the recipes on this site have descriptions so we have to check
+    description = soup.find("div", class_="tasty-recipe-description")
+
+    if description:
+        description = description.getText()
+    else:
+        description = None
+
+    prep_time = soup.find("span", "prep-time").getText().replace("Prep: ", "")
+    servings = (
+        soup.find("span", class_="yield")
+        .getText()
+        .replace("Servings: ", "")
+        .replace(" 1x", "")
+    )
+
+    # get and scrub the block text from the ingredients div
+    ingredients_raw = (
+        soup.find("div", class_="tasty-recipes-ingredients")
+        .getText()
+        .replace("Ingredients", "")
+        .strip()
+    )
+
+    # create a list from the block text
+    ingredients = list_from_str(ingredients_raw)
+
+    # get and scrub the block text from instructions div
     instructions_raw = soup.find("div", class_="tasty-recipes-instructions").getText()
-    instructions = (
+    instructions_raw = (
         remove_blank_lines(instructions_raw).replace("Instructions", "")
     ).strip()
-    print(ingredients)
-    print("\n\n")
-    print(instructions)
-    ...
+
+    # create a list from block text
+    instructions = list_from_str(instructions_raw)
+
+    # get the nutrition data
+    nutrition_raw = soup.find("div", class_="tasty-recipes-nutrition")
+
+    # make a list of nutrition tags
+    data_val = ""
+    nutrition = []
+    for value_tag in nutrition_raw.descendants:
+        text = value_tag.getText()
+        if re.match("[(a-zA-Z0-9]+: ", text):
+            if text.startswith("("):
+                text = text.replace("(", "")
+            elif text.endswith(")"):
+                text = text.replace(")", "")
+            nutrition.append(text)
+        data_val += value_tag.getText()
+    print(nutrition)
+
+    # print(nutrition)
+
+    # create list of nutrition tags
+
+    # print(description)
+    # print(prep_time)
+    # print(cook_time)
+    # print(servings)
+    # print(ingredients)
+    # print("\n\n")
+    # print(instructions)
+    # ...
 
 
-# scrape_real_foodie_titans(
-#     "https://therealfooddietitians.com/breakfast-pizza-with-hash-brown-crust/"
-# )
-
-scrape_simply_quinoa(
-    "https://www.simplyquinoa.com/quinoa-stuffed-eggplant-with-tahini-sauce/"
+scrape_real_foodie_titans(
+    "https://therealfooddietitians.com/breakfast-pizza-with-hash-brown-crust/"
 )
+
+# scrape_simply_quinoa(
+#     "https://www.simplyquinoa.com/quinoa-stuffed-eggplant-with-tahini-sauce/"
+# )
 # Eventually I plan on adding more sites to
 # be scrapped per the request of the person
 # this script is for, But presently this will
