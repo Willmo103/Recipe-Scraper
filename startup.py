@@ -3,7 +3,7 @@ import os
 
 def run_startup():
     cwd = os.path.abspath('./')
-    os.systems(f"cd {cwd}")
+    os.system(f"cd {cwd}")
     os.system("python -m virtualenv venv")
     os.system("venv/bin/activate")
     os.system("pip install -r requirements.txt")
