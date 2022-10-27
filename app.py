@@ -53,6 +53,10 @@ print("\nRecipes:")
 for i in range(len(recipe_urls)):
     print(f"{i + 1}) {recipe_urls[i]}")
 print("Ready to beguin scraping data.")
-for url in recipe_urls:
+
+num_of_recipes = len(recipe_urls)
+for i in range(num_of_recipes):
+    url = recipe_urls[i]
+    print(f"\nWriting {i} of {num_of_recipes} recipes...")
     json_data = scrapeSimplyQ(url)
     wj(file_path, json_data)
