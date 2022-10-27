@@ -89,11 +89,10 @@ def scrape_simply_quinoa(url: str) -> dict:
         "notes": notes,
         "nutrition": nutrition,
     }
-    print(recipeJson)
     return recipeJson
 
 
-def scrape_real_foodie_titans(url: str) -> dict:
+def scrape_real_foodie_dietitians(url: str) -> dict:
     req = r.request("get", url).text
 
     soup = bs(req, "html5lib")
@@ -101,12 +100,12 @@ def scrape_real_foodie_titans(url: str) -> dict:
     name = soup.find("h2", "tasty-recipes-title").getText()
     cook_time = soup.find("span", "cook-time").getText().replace("Cook: ", "")
     # Not all the recipes on this site have descriptions so we have to check
-    description = soup.find("div", class_="tasty-recipe-description")
+    summary = soup.find("div", class_="tasty-recipe-description")
 
-    if description:
-        description = description.getText()
+    if summary:
+        summary = summary.getText()
     else:
-        description = None
+        summary = None
 
     prep_time = soup.find("span", "prep-time").getText().replace("Prep: ", "")
     servings = (
@@ -115,6 +114,8 @@ def scrape_real_foodie_titans(url: str) -> dict:
         .replace("Servings: ", "")
         .replace(" 1x", "")
     )
+
+    calories = ""
 
     # get and scrub the block text from the ingredients div
     ingredients_raw = (
@@ -149,27 +150,37 @@ def scrape_real_foodie_titans(url: str) -> dict:
                 text = text.replace("(", "")
             elif text.endswith(")"):
                 text = text.replace(")", "")
+            elif text.startswith("Calories: "):
+                calories = text.split(":")[1]
             nutrition.append(text)
         data_val += value_tag.getText()
-    print(nutrition)
-
     # print(nutrition)
 
-    # create list of nutrition tags
+    notes = soup.find("div", class_="tasty-recipes-notes")
+    if notes:
+        notes = notes.getText().split("Notes")[1].strip()
+    else:
+        notes = None
 
-    # print(description)
-    # print(prep_time)
-    # print(cook_time)
-    # print(servings)
-    # print(ingredients)
-    # print("\n\n")
-    # print(instructions)
-    # ...
+    recipeJson = {
+        "name": name,
+        "summary": summary,
+        "prep_time": prep_time,
+        "cook_time": cook_time,
+        "servings": servings,
+        "calories": calories,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "notes": notes,
+        "nutrition": nutrition,
+    }
+    return recipeJson
 
 
-scrape_real_foodie_titans(
-    "https://therealfooddietitians.com/breakfast-pizza-with-hash-brown-crust/"
-)
+# scrape_real_foodie_dietitians(
+# "https://therealfooddietitians.com/breakfast-pizza-with-hash-brown-crust/"
+# )
+# scrape_real_foodie_dietitians("https://therealfooddietitians.com/baked-cod-recipe/")
 
 # scrape_simply_quinoa(
 #     "https://www.simplyquinoa.com/quinoa-stuffed-eggplant-with-tahini-sauce/"
