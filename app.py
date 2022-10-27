@@ -1,4 +1,4 @@
-from scrapers import scrapeSimplyQ
+from scrapers import scrape_simply_quinoa
 import os
 from utils import write_json as wj
 
@@ -57,6 +57,6 @@ print("Ready to beguin scraping data.")
 num_of_recipes = len(recipe_urls)
 for i in range(num_of_recipes):
     url = recipe_urls[i]
-    print(f"\nWriting {i} of {num_of_recipes} recipes...")
-    json_data = scrapeSimplyQ(url)
+    print(f"\nWriting {i+1} of {num_of_recipes} recipes...")
+    json_data = scrape_simply_quinoa(url)
     wj(file_path, json_data)
