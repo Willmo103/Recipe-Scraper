@@ -82,8 +82,8 @@ def scrape_simply_quinoa(url: str) -> dict:
     recipeJson = {
         "name": name,
         "summary": summary,
-        "prep_time": prep_time,
-        "cook_time": cook_time,
+        "prepTime": prep_time,
+        "cookTime": cook_time,
         "servings": servings,
         "calories": calories,
         "ingredients": ingredients,
@@ -96,14 +96,12 @@ def scrape_simply_quinoa(url: str) -> dict:
 
 def scrape_real_food_dietitians(url: str) -> dict:
     req = r.request("get", url).text
-
     soup = bs(req, "html5lib")
-
     name = soup.find("h2", "tasty-recipes-title").getText()
     cook_time = soup.find("span", "cook-time").getText().replace("Cook: ", "")
+
     # Not all the recipes on this site have descriptions so we have to check
     summary = soup.find("div", class_="tasty-recipe-description")
-
     if summary:
         summary = summary.getText()
     else:
@@ -158,7 +156,6 @@ def scrape_real_food_dietitians(url: str) -> dict:
                 calories = text.split(":")[1]
             nutrition.append(text)
         data_val += value_tag.getText()
-    # print(nutrition)
 
     notes = soup.find("div", class_="tasty-recipes-notes")
     if notes:
@@ -169,8 +166,8 @@ def scrape_real_food_dietitians(url: str) -> dict:
     recipeJson = {
         "name": name,
         "summary": summary,
-        "prep_time": prep_time,
-        "cook_time": cook_time,
+        "prepTime": prep_time,
+        "cookTime": cook_time,
         "servings": servings,
         "calories": calories,
         "ingredients": ingredients,
@@ -181,14 +178,6 @@ def scrape_real_food_dietitians(url: str) -> dict:
     return recipeJson
 
 
-# scrape_real_foodie_dietitians(
-# "https://therealfooddietitians.com/breakfast-pizza-with-hash-brown-crust/"
-# )
-# scrape_real_foodie_dietitians("https://therealfooddietitians.com/baked-cod-recipe/")
-
-# scrape_simply_quinoa(
-#     "https://www.simplyquinoa.com/quinoa-stuffed-eggplant-with-tahini-sauce/"
-# )
 # Eventually I plan on adding more sites to
 # be scrapped per the request of the person
 # this script is for, But presently this will
