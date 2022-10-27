@@ -19,10 +19,30 @@ def scrape_simply_quinoa(url: str) -> dict:
     # get all of the items to populate our json file
     name = soup.find("h2", class_="wprm-recipe-name").getText()
     summary = soup.find("div", class_="wprm-recipe-summary").getText()
-    prep_time = soup.find("div", class_="wprm-recipe-prep-time-container").getText()
-    cook_time = soup.find("div", class_="wprm-recipe-cook-time-container").getText()
-    servings = soup.find("div", class_="wprm-recipe-servings-container").getText()
-    calories = soup.find("div", class_="wprm-recipe-calories-container").getText()
+    prep_time = (
+        soup.find("div", class_="wprm-recipe-prep-time-container")
+        .getText()
+        .replace("Prep Time", "")
+        .strip()
+    )
+    cook_time = (
+        soup.find("div", class_="wprm-recipe-cook-time-container")
+        .getText()
+        .replace("Cook Time", "")
+        .strip()
+    )
+    servings = (
+        soup.find("div", class_="wprm-recipe-servings-container")
+        .getText()
+        .replace("Servings", "")
+        .strip()
+    )
+    calories = (
+        soup.find("div", class_="wprm-recipe-calories-container")
+        .getText()
+        .replace("Calories", "")
+        .strip()
+    )
     nutrition = soup.find("div", class_="wprm-nutrition-label-container").getText()
 
     # get each ingredient div
@@ -66,6 +86,7 @@ def scrape_simply_quinoa(url: str) -> dict:
         "notes": notes,
         "nutrition": nutrition,
     }
+    print(recipeJson)
     return recipeJson
 
 
