@@ -26,12 +26,14 @@ def scrape_simply_quinoa(url: str) -> dict:
         .replace("Prep Time", "")
         .strip()
     )
-    cook_time = (
-        soup.find("div", class_="wprm-recipe-cook-time-container")
-        .getText()
-        .replace("Cook Time", "")
-        .strip()
-    )
+
+    # some small meals don't have a cook time field so we have to check that
+    cook_time = soup.find("div", class_="wprm-recipe-cook-time-container")
+    if cook_time:
+        cook_time = cook_time.getText().replace("Cook Time", "").strip()
+    else:
+        cook_time = None
+
     servings = (
         soup.find("div", class_="wprm-recipe-servings-container")
         .getText()
@@ -92,7 +94,7 @@ def scrape_simply_quinoa(url: str) -> dict:
     return recipeJson
 
 
-def scrape_real_foodie_dietitians(url: str) -> dict:
+def scrape_real_food_dietitians(url: str) -> dict:
     req = r.request("get", url).text
 
     soup = bs(req, "html5lib")
@@ -112,9 +114,11 @@ def scrape_real_foodie_dietitians(url: str) -> dict:
         soup.find("span", class_="yield")
         .getText()
         .replace("Servings: ", "")
+        .replace("servings", "")
         .replace(" 1x", "")
     )
 
+    # calories will get filled by data from the nutrition tags
     calories = ""
 
     # get and scrub the block text from the ingredients div

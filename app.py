@@ -1,9 +1,26 @@
-from scrapers import scrape_simply_quinoa
+from scrapers import scrape_real_food_dietitians, scrape_simply_quinoa
 import os
 from utils import write_json as wj
 
 # The list of URLs to be scraped
 recipe_urls = []
+
+# objects to hold data on websites supported
+SUPPORTED_WEBSITES = [
+    {
+        "name": "Simply Quinoa",
+        "url": "https://simplyquinoa.com",
+        "scraper": scrape_simply_quinoa,
+    },
+    {
+        "name": "The Real Food Dietitians",
+        "url": "https://therealfooddietitians.com",
+        "scraper": scrape_real_food_dietitians,
+    },
+]
+
+# variable of the users choice of website
+website_choice = ""
 
 # First we will query the user for their root output
 # folder to save our .json files from each webpage
@@ -32,6 +49,24 @@ else:
 # let the user know where they will be able to locate the json files.
 print(f"The output recipes can be found at {file_path}")
 
+# Get user's choice of website of the websites currently supported
+print(f"\n\nWhich website do you want to scrape?")
+i = 0
+for site in SUPPORTED_WEBSITES:
+    i += 1
+    print(f"{i} -- {site.get('name')} -- {site.get('url')}")
+website_choice = int(input(f"Enter choice 1 - {len(SUPPORTED_WEBSITES)}\n> ")) - 1
+
+# Validate their choice
+while website_choice < 0 or website_choice > len(SUPPORTED_WEBSITES) - 1:
+    print("\nInvalid Input!\n")
+    print(f"Which website do you want to scrape?")
+    i = 0
+    for site in SUPPORTED_WEBSITES:
+        i += 1
+        print(f"{i} -- {site.get('name')} -- {site.get('url')}")
+    website_choice = int(input(f"Enter choice 1 - {len(SUPPORTED_WEBSITES)}\n> ")) - 1
+
 # Start the collection process. This block allows the user to enter
 #  as many urls as they want to until they hit enter to proceed to
 # scraping and saving the data
@@ -58,5 +93,5 @@ num_of_recipes = len(recipe_urls)
 for i in range(num_of_recipes):
     url = recipe_urls[i]
     print(f"\nWriting {i+1} of {num_of_recipes} recipes...")
-    json_data = scrape_simply_quinoa(url)
+    json_data = SUPPORTED_WEBSITES[website_choice].get("scraper")(url)
     wj(file_path, json_data)
