@@ -272,25 +272,3 @@ def scrape_simply_recipes(url: str) -> dict:
         "nutrition": nutrition,
     }
     return recipeJson
-
-
-# scrape_simply_recipes(
-#     "https://www.simplyrecipes.com/recipes/brussels_sprouts_mushroom_goat_cheese_breakfast_casserole/"
-# )
-scrape_simply_recipes("https://www.simplyrecipes.com/recipes/moms_roast_turkey/")
-
-# Eventually I plan on adding more sites to
-# be scrapped per the request of the person
-# this script is for, But presently this will
-# # only work with SimplyQuinoa.com
-#     print("Name: " + name)
-#     print("\nPrep Time: " + prep_time)
-#     print("\nCook Time: " + cook_time)
-#     print("\nServings: " + servings)
-#     print("\nCalories: " + calories)
-#     for i in ingredients:
-#         print(f"\n{i}")
-#     for i in instructions:
-#         print(f"\n{i}")
-#     print(f"\nNotes: {notes}")
-#     print(f"\nNutrition: {nutrition}")
