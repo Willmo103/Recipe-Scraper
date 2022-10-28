@@ -271,3 +271,68 @@ def scrape_simply_recipes(url: str) -> dict:
         "nutrition": nutrition,
     }
     return recipeJson
+
+
+def scrape_allRecipes(url: str) -> dict:
+    req = r.request("get", url).text
+    soup = bs(req, "html5lib")
+
+    name = soup.find("h1", class_="article-heading").getText().strip()
+    summary = soup.find("h2", "article-subheading").getText().strip()
+    prep_time = ""
+    cook_time = ""
+    servings = ""
+    calories = ""
+
+    details_field = soup.findAll("div", class_="mntl-recipe-details__item")
+    for item in details_field:
+        value = item.getText().replace("\n", "").split(":")
+        if value[0] == "Prep Time":
+            prep_time = (
+                value[1].replace("hrs", "hours").replace("mins", "minutes").strip()
+            )
+        elif value[0] == "Cook Time":
+            cook_time = (
+                value[1].replace("hrs", "hours").replace("mins", "minutes").strip()
+            )
+        elif value[0] == "Servings":
+            servings = value[1].strip()
+
+    ingredients = []
+    ingredients_raw = soup.findAll(
+        "li", class_="mntl-structured-ingredients__list-item"
+    )
+    for item in ingredients_raw:
+        item = item.getText().strip()
+        ingredients.append(item)
+
+    instructions = []
+    instructions_raw = soup.find_all("p", class_="mntl-sc-block")
+    for item in instructions_raw:
+        item = item.getText().strip()
+        instructions.append(item)
+
+    notes = None
+
+    nutrition = []
+    nutrition_raw = soup.findAll("tr", class_="mntl-nutrition-facts-summary__table-row")
+    for item in nutrition_raw:
+        item = item.getText().strip().split("\n")
+        if item[1] == "Calories":
+            calories = item[0]
+        text = f"{item[1]}: {item[0]}"
+        nutrition.append(text)
+
+    recipeJson = {
+        "name": name,
+        "summary": summary,
+        "prepTime": prep_time,
+        "cookTime": cook_time,
+        "servings": servings,
+        "calories": calories,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "notes": notes,
+        "nutrition": nutrition,
+    }
+    return recipeJson

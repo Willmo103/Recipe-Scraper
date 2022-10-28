@@ -2,6 +2,7 @@ from scrapers import (
     scrape_real_food_dietitians,
     scrape_simply_quinoa,
     scrape_simply_recipes,
+    scrape_allRecipes,
 )
 import os
 from utils import write_json as wj
@@ -11,6 +12,11 @@ recipe_urls = []
 
 # objects to hold data on websites supported
 SUPPORTED_WEBSITES = [
+    {
+        "name": "AllRecipes",
+        "url": "http://allrecipes.com",
+        "scraper": scrape_allRecipes,
+    },
     {
         "name": "Simply Quinoa",
         "url": "https://simplyquinoa.com",
