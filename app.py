@@ -1,4 +1,5 @@
 from scrapers import (
+    scrape_myRecipes,
     scrape_real_food_dietitians,
     scrape_simply_quinoa,
     scrape_simply_recipes,
@@ -18,6 +19,16 @@ SUPPORTED_WEBSITES = [
         "scraper": scrape_allRecipes,
     },
     {
+        "name": "MY Recipes",
+        "url": "https://www.myrecipes.com",
+        "scraper": scrape_myRecipes,
+    },
+    {
+        "name": "Simply Recipes",
+        "url": "https://www.simplyrecipes.com",
+        "scraper": scrape_simply_recipes,
+    },
+    {
         "name": "Simply Quinoa",
         "url": "https://simplyquinoa.com",
         "scraper": scrape_simply_quinoa,
@@ -26,11 +37,6 @@ SUPPORTED_WEBSITES = [
         "name": "The Real Food Dietitians",
         "url": "https://therealfooddietitians.com",
         "scraper": scrape_real_food_dietitians,
-    },
-    {
-        "name": "Simply Recipes",
-        "url": "https://www.simplyrecipes.com",
-        "scraper": scrape_simply_recipes,
     },
 ]
 

@@ -336,3 +336,72 @@ def scrape_allRecipes(url: str) -> dict:
         "nutrition": nutrition,
     }
     return recipeJson
+
+
+def scrape_myRecipes(url: str) -> dict:
+    req = r.request("get", url).text
+    soup = bs(req, "html5lib")
+    name = soup.find("h1", class_="heading-content").getText()
+    summary = soup.find("div", class_="recipe-summary").getText().strip()
+    prep_time = None
+    cook_time = None
+    servings = None
+    calories = None
+
+    details_field = soup.findAll("div", class_="recipe-meta-item")
+    active = ""
+    total = ""
+    total = ""
+    active = ""
+
+    for item in details_field:
+        item = item.getText().strip()
+        if item.find("active:") != -1:
+            active = (
+                item.replace("active:", "")
+                .replace("mins", "minutes")
+                .replace("hrs", "hours")
+                .strip()
+            )
+        if item.find("total:") != -1:
+            total = item.replace("total:", "").replace("mins", "minutes").strip()
+        if item.find("Yield") != -1:
+            servings = item.replace("Yield:", "").replace("Serves ", "").strip()
+        cook_time = total
+        prep_time = active
+
+    ingredients = []
+    ingredients_raw = soup.findAll("li", class_="ingredients-item")
+    for item in ingredients_raw:
+        item = item.getText().strip()
+        ingredients.append(item)
+
+    instructions = []
+    instructions_raw = soup.findAll("div", class_="elementFont__body--linkWithin")
+    for item in instructions_raw:
+        item = item.getText().strip()
+        instructions.append(item)
+    notes = None
+
+    nutrition = soup.find("div", class_="recipeNutritionSectionBlock")
+    if nutrition:
+        nutrition = nutrition.getText().replace("Per Serving:", "").strip().split(";")
+        calories = nutrition[0].replace("calories", "").strip()
+        print(nutrition)
+    else:
+        nutrition = None
+
+    recipeJson = {
+        "name": name,
+        "summary": summary,
+        "prepTime": prep_time,
+        "cookTime": cook_time,
+        "servings": servings,
+        "calories": calories,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "notes": notes,
+        "nutrition": nutrition,
+    }
+    print(recipeJson)
+    return recipeJson
