@@ -15,7 +15,7 @@ recipe_urls = []
 SUPPORTED_WEBSITES = [
     {
         "name": "AllRecipes",
-        "url": "http://allrecipes.com",
+        "url": "https://www.allrecipes.com",
         "scraper": scrape_allRecipes,
     },
     {
@@ -30,7 +30,7 @@ SUPPORTED_WEBSITES = [
     },
     {
         "name": "Simply Quinoa",
-        "url": "https://simplyquinoa.com",
+        "url": "https://www.simplyquinoa.com",
         "scraper": scrape_simply_quinoa,
     },
     {
@@ -71,22 +71,12 @@ else:
 print(f"The output recipes can be found at {file_path}")
 
 # Get user's choice of website of the websites currently supported
-print(f"\n\nWhich website do you want to scrape?")
+print("These are the currently supported websites.\nEnter Any url form these sites:\n")
 i = 0
 for site in SUPPORTED_WEBSITES:
     i += 1
     print(f"{i} -- {site.get('name')} -- {site.get('url')}")
-website_choice = int(input(f"Enter choice 1 - {len(SUPPORTED_WEBSITES)}\n> ")) - 1
-
-# Validate their choice
-while website_choice < 0 or website_choice > len(SUPPORTED_WEBSITES) - 1:
-    print("\nInvalid Input!\n")
-    print(f"Which website do you want to scrape?")
-    i = 0
-    for site in SUPPORTED_WEBSITES:
-        i += 1
-        print(f"{i} -- {site.get('name')} -- {site.get('url')}")
-    website_choice = int(input(f"Enter choice 1 - {len(SUPPORTED_WEBSITES)}\n> ")) - 1
+print("\n")
 
 # Start the collection process. This block allows the user to enter
 #  as many urls as they want to until they hit enter to proceed to
@@ -110,9 +100,14 @@ for i in range(len(recipe_urls)):
     print(f"{i + 1}) {recipe_urls[i]}")
 print("Ready to beguin scraping data.")
 
+# Use determine which scraper to use from each urls website
 num_of_recipes = len(recipe_urls)
 for i in range(num_of_recipes):
-    url = recipe_urls[i]
-    print(f"\nWriting {i+1} of {num_of_recipes} recipes...")
-    json_data = SUPPORTED_WEBSITES[website_choice].get("scraper")(url)
-    wj(file_path, json_data)
+    url: str = recipe_urls[i]
+    index = None
+    for j in range(len(SUPPORTED_WEBSITES)):
+        if url.startswith(SUPPORTED_WEBSITES[j].get("url")):
+            print(f"\nWriting {i+1} of {num_of_recipes} recipes...")
+            json_data = SUPPORTED_WEBSITES[j].get("scraper")(url)
+            wj(file_path, json_data)
+            break

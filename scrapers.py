@@ -222,7 +222,6 @@ def scrape_simply_recipes(url: str) -> dict:
     for item in ingredients_raw:
         text = item.getText().strip()
         ingredients.append(text)
-    # print(f"\nIngredients: {ingredients}")
 
     instructions_raw = soup.findAll("li", class_="mntl-sc-block-group--LI")
     instructions = []
@@ -240,7 +239,6 @@ def scrape_simply_recipes(url: str) -> dict:
     for item in instructions_raw:
         item = item.getText().replace(picture, "").replace("\n", " ").strip()
         instructions.append(item)
-    # print(f"\nInstructions: {instructions}")
 
     nutrition = []
     nutrition_raw = soup.findAll("tr", class_="nutrition-info__table--row")
@@ -368,7 +366,6 @@ def scrape_myRecipes(url: str) -> dict:
         if item.find("Yield") != -1:
             servings = item.replace("Yield:", "").replace("Serves ", "").strip()
         cook_time = total
-        prep_time = active
 
     ingredients = []
     ingredients_raw = soup.findAll("li", class_="ingredients-item")
@@ -387,7 +384,6 @@ def scrape_myRecipes(url: str) -> dict:
     if nutrition:
         nutrition = nutrition.getText().replace("Per Serving:", "").strip().split(";")
         calories = nutrition[0].replace("calories", "").strip()
-        print(nutrition)
     else:
         nutrition = None
 
@@ -403,5 +399,4 @@ def scrape_myRecipes(url: str) -> dict:
         "notes": notes,
         "nutrition": nutrition,
     }
-    print(recipeJson)
     return recipeJson
