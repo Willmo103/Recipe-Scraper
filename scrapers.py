@@ -261,6 +261,7 @@ def scrape_simply_recipes(url: str) -> dict:
 
     recipeJson = {
         "name": name,
+        "summary": summary,
         "prepTime": prep_time,
         "cookTime": cook_time,
         "servings": servings,
