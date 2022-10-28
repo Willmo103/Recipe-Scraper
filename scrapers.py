@@ -1,4 +1,3 @@
-from dis import Instruction
 import requests as r
 from bs4 import BeautifulSoup as bs
 from utils import remove_blank_lines, list_from_str
