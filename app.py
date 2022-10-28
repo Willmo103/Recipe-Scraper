@@ -1,4 +1,8 @@
-from scrapers import scrape_real_food_dietitians, scrape_simply_quinoa
+from scrapers import (
+    scrape_real_food_dietitians,
+    scrape_simply_quinoa,
+    scrape_simply_recipes,
+)
 import os
 from utils import write_json as wj
 
@@ -16,6 +20,11 @@ SUPPORTED_WEBSITES = [
         "name": "The Real Food Dietitians",
         "url": "https://therealfooddietitians.com",
         "scraper": scrape_real_food_dietitians,
+    },
+    {
+        "name": "Simply Recipes",
+        "url": "https://www.simplyrecipes.com",
+        "scraper": scrape_simply_recipes,
     },
 ]
 

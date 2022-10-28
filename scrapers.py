@@ -178,7 +178,118 @@ def scrape_real_food_dietitians(url: str) -> dict:
     return recipeJson
 
 
+def scrape_simply_recipes(url: str) -> dict:
+    req = r.request("get", url).text
+    soup = bs(req, "html5lib")
+
+    # get the name of the recipe
+    name = soup.find("h2", class_="recipe-block__header").getText().strip()
+
+    # Doesn't look like this website provides a summary field so we'll
+    # set this to 'None'
+    summary = None
+
+    prep_time = (
+        soup.find("div", class_="prep-time")
+        .getText()
+        .replace("Prep Time", "")
+        .replace("mins", "minutes")
+        .strip()
+    )
+
+    cook_time = (
+        soup.find("div", class_="cook-time")
+        .getText()
+        .replace("Cook Time", "")
+        .replace("mins", "minutes")
+        .replace("hrs", "hours")
+        .strip()
+    )
+
+    servings = (
+        soup.find("div", class_="recipe-serving")
+        .getText()
+        .replace("Servings", "")
+        .replace("servings", "")
+        .replace("\n", " ")
+        .strip()
+    )
+
+    calories = ""
+
+    ingredients_raw = soup.findAll("li", class_="structured-ingredients__list-item")
+    ingredients = []
+
+    for item in ingredients_raw:
+        text = item.getText().strip()
+        ingredients.append(text)
+    # print(f"\nIngredients: {ingredients}")
+
+    instructions_raw = soup.findAll("li", class_="mntl-sc-block-group--LI")
+    instructions = []
+
+    last_item = ""
+    picture = ""
+    for item in instructions_raw:
+        item = item.getText().strip()
+        item_arr = item.split("\n")
+        if item_arr[len(item_arr) - 1] != last_item:
+            last_item = item_arr[len(item_arr) - 1]
+        elif item_arr[len(item_arr) - 1] == last_item:
+            picture = last_item
+
+    for item in instructions_raw:
+        item = item.getText().replace(picture, "").replace("\n", " ").strip()
+        instructions.append(item)
+    # print(f"\nInstructions: {instructions}")
+
+    nutrition = []
+    nutrition_raw = soup.findAll("tr", class_="nutrition-info__table--row")
+    for item in nutrition_raw:
+        item = item.getText().strip().split("\n")
+        text = item[1] + ": " + item[0]
+        if item[1] == "Calories":
+            calories = item[0]
+        nutrition.append(text)
+
+    notes = soup.find("div", class_="recipe-block__note-text")
+
+    if notes:
+        notes = notes.getText().strip()
+    else:
+        notes = None
+
+    recipeJson = {
+        "name": name,
+        "prepTime": prep_time,
+        "cookTime": cook_time,
+        "servings": servings,
+        "calories": calories,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "notes": notes,
+        "nutrition": nutrition,
+    }
+    return recipeJson
+
+
+# scrape_simply_recipes(
+#     "https://www.simplyrecipes.com/recipes/brussels_sprouts_mushroom_goat_cheese_breakfast_casserole/"
+# )
+scrape_simply_recipes("https://www.simplyrecipes.com/recipes/moms_roast_turkey/")
+
 # Eventually I plan on adding more sites to
 # be scrapped per the request of the person
 # this script is for, But presently this will
-# only work with SimplyQuinoa.com
+# # only work with SimplyQuinoa.com
+#     print("Name: " + name)
+#     print("\nPrep Time: " + prep_time)
+#     print("\nCook Time: " + cook_time)
+#     print("\nServings: " + servings)
+#     print("\nCalories: " + calories)
+#     for i in ingredients:
+#         print(f"\n{i}")
+#     for i in instructions:
+#         print(f"\n{i}")
+#     print(f"\nNotes: {notes}")
+#     print(f"\nNutrition: {nutrition}")
