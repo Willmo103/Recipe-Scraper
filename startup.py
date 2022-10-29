@@ -8,6 +8,7 @@ def run_startup():
     cwd = os.path.abspath("./")
     os.system(f"cd {cwd}")
     os.system("python -m virtualenv venv")
+    time.sleep(5)
     print("Waiting on venv to install...")
     if os_name == "Windows":
         while not os.path.exists("./venv/Scripts/activate.ps1"):
