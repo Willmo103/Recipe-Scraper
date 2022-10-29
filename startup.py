@@ -1,5 +1,6 @@
 import os
 import platform
+import time
 
 
 def run_startup():
@@ -7,12 +8,22 @@ def run_startup():
     cwd = os.path.abspath("./")
     os.system(f"cd {cwd}")
     os.system("python -m virtualenv venv")
+    print("Waiting on venv to install...")
     if os_name == "Windows":
+        while not os.path.exists("./venv/Scripts/activate.ps1"):
+            time.sleep(5)
+            print("still waiting...")
+        print("Activating virtual environment.")
         os.system("venv/Scripts/activate")
     else:
+        while not os.path.exists("./venv/bin/activate"):
+            time.sleep(5)
+            print("still waiting...")
+        print("Activating virtual environment.")
         os.system("source venv/bin/activate")
+    print("installing requirements")
     os.system("pip install -r requirements.txt")
-    os.system("python ./app.py")
+    print("All files installed, ready to scrape!")
 
 
 if __name__ == "__main__":
