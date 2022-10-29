@@ -15,13 +15,13 @@ def run_startup():
             time.sleep(5)
             print("still waiting...")
         print("Activating virtual environment.")
-        os.system("venv/Scripts/activate")
+        os.system("./venv/Scripts/activate")
     else:
         while not os.path.exists("./venv/bin/activate"):
             time.sleep(5)
             print("still waiting...")
         print("Activating virtual environment.")
-        os.system("source venv/bin/activate")
+        os.system("source ./venv/bin/activate")
     print("installing requirements")
     os.system("pip install -r requirements.txt")
     print("All files installed, ready to scrape!")
